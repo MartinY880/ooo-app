@@ -179,6 +179,26 @@ The application uses Tailwind CSS with:
 4. Deploy the `dist` folder to your hosting service
 5. Ensure HTTPS is enabled
 
+## 🐳 Docker Image
+
+Build the production image (no Azure AD values needed at build time):
+
+```powershell
+docker build -t ooo-app .
+```
+
+Run the container locally and inject your Azure AD configuration at runtime:
+
+```powershell
+docker run `
+  -e VITE_AZURE_CLIENT_ID=<client-id> `
+  -e VITE_AZURE_TENANT_ID=<tenant-id> `
+  -e VITE_REDIRECT_URI=https://your-host-name `
+  -p 8080:80 ooo-app
+```
+
+The site will be available at `http://localhost:8080`. Update or rotate the environment variables without rebuilding the image; the entrypoint regenerates the runtime config on each container start.
+
 ## 🐛 Troubleshooting
 
 ### Login Issues

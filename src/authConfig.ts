@@ -1,5 +1,19 @@
 import type { Configuration, PopupRequest } from "@azure/msal-browser";
 
+interface RuntimeWindow extends Window {
+  __RUNTIME_CONFIG__?: Record<string, string | undefined>;
+}
+
+const runtimeEnv = (typeof window !== "undefined"
+  ? (window as RuntimeWindow).__RUNTIME_CONFIG__
+  : undefined) || {};
+
+const buildEnv = import.meta.env as unknown as Record<string, string | undefined>;
+
+const getRuntimeValue = (key: "VITE_AZURE_CLIENT_ID" | "VITE_AZURE_TENANT_ID" | "VITE_REDIRECT_URI") => {
+  return runtimeEnv[key] || buildEnv[key] || "";
+};
+
 /**
  * MSAL Configuration
  * 
@@ -10,11 +24,15 @@ import type { Configuration, PopupRequest } from "@azure/msal-browser";
  *    - authority: Your tenant ID (format: https://login.microsoftonline.com/{tenant-id})
  *    - redirectUri: Your application's redirect URI (e.g., http://localhost:5173)
  */
+const azureClientId = getRuntimeValue("VITE_AZURE_CLIENT_ID");
+const azureTenantId = getRuntimeValue("VITE_AZURE_TENANT_ID");
+const redirectUri = getRuntimeValue("VITE_REDIRECT_URI") || window.location.origin;
+
 export const msalConfig: Configuration = {
   auth: {
-    clientId: import.meta.env.VITE_AZURE_CLIENT_ID || "",
-    authority: `https://login.microsoftonline.com/${import.meta.env.VITE_AZURE_TENANT_ID}`,
-    redirectUri: import.meta.env.VITE_REDIRECT_URI || window.location.origin,
+    clientId: azureClientId,
+    authority: azureTenantId ? `https://login.microsoftonline.com/${azureTenantId}` : undefined,
+    redirectUri,
     navigateToLoginRequestUrl: false,
   },
   cache: {

@@ -1,0 +1,25 @@
+version: '3.8'
+services:
+  ooo-app:
+    image: ghostreaper69/mtgprosooo:v0.0.1
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik
+      - traefik.http.routers.ooo-app.rule=Host(`ooo-dev.pros.mortgage`)
+      - traefik.http.routers.ooo-app.entrypoints=websecure
+      - traefik.http.routers.ooo-app.tls.certresolver=letsencrypt
+      - traefik.http.services.ooo-app.loadbalancer.server.port=80
+    environment:
+      - VITE_AZURE_CLIENT_ID=
+      - VITE_AZURE_TENANT_ID=
+      - VITE_REDIRECT_URI=https://ooo-dev.pros.mortgage
+    restart: unless-stopped
+    networks:
+      - ooo-app
+      - traefik
+
+networks:
+  ooo-app:
+    driver: bridge
+  traefik:
+    external: true
