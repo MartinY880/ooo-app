@@ -70,7 +70,7 @@ export const UserSearch: React.FC<UserSearchProps> = ({ onUserSelect, selectedUs
         // Make the Graph API request with the access token
         // Important: The $search parameter requires the ConsistencyLevel: eventual header
         const graphResponse = await fetch(
-          `${graphConfig.graphUsersEndpoint}?$search="displayName:${debouncedSearchTerm}" OR "mail:${debouncedSearchTerm}"&$filter=userType eq 'Member'&$top=10&$select=id,displayName,mail,userPrincipalName,jobTitle,department`,
+          `${graphConfig.graphUsersEndpoint}?$search="displayName:${debouncedSearchTerm}" OR "mail:${debouncedSearchTerm}"&$filter=userType eq 'Member' and accountEnabled eq true&$top=10&$select=id,displayName,mail,userPrincipalName,jobTitle,department`,
           {
             headers: {
               Authorization: `Bearer ${response.accessToken}`,
